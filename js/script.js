@@ -137,7 +137,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Классы для создание карточек меню
 
   class MenuTemplates {
-    constructor(imgSrc, alt, h3, divDescr, divCost, divTotalSpan, divTotal) {
+    constructor(imgSrc, alt, h3, divDescr, divCost, divTotalSpan, divTotal, parentSelector, ...classes) {
       this.imgSrc = imgSrc;
       this.alt = alt;
       this.h3 = h3;
@@ -145,6 +145,8 @@ window.addEventListener('DOMContentLoaded', () => {
       this.divCost = divCost;
       this.divTotalSpan = divTotalSpan;
       this.divTotal = divTotal;
+      this.classes = classes;
+      this.parent = document.querySelector(parentSelector);
       this.transfer = 2;
       this.changeToUAH();
     }
@@ -154,19 +156,26 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     addingInformationToTheSite() {
-      const menuItem = document.querySelector('#menuContainer');
-        menuItem.innerHTML += `
-        <div class="menu__item">
-          <img src="${this.imgSrc}" alt="${this.alt}">
-          <h3 class="menu__item-subtitle">${this.h3}"</h3>
-          <div class="menu__item-descr">${this.divDescr}</div>
-          <div class="menu__item-divider"></div>
-          <div class="menu__item-price">
-              <div class="menu__item-cost">${this.divCost}</div>
-              <div class="menu__item-total"><span>${this.divTotalSpan}</span> ${this.divTotal}</div>
-          </div>
+      const element = document.createElement('div');
+
+      if (this.classes.length === 0) {
+          this.classes = "menu__item";
+          element.classList.add(this.classes);
+      } else {
+          this.classes.forEach(className => element.classList.add(className));
+      }
+
+      element.innerHTML += `
+        <img src="${this.imgSrc}" alt="${this.alt}">
+        <h3 class="menu__item-subtitle">${this.h3}"</h3>
+        <div class="menu__item-descr">${this.divDescr}</div>
+        <div class="menu__item-divider"></div>
+        <div class="menu__item-price">
+            <div class="menu__item-cost">${this.divCost}</div>
+            <div class="menu__item-total"><span>${this.divTotalSpan}</span> ${this.divTotal}</div>
         </div>
       `;
+      this.parent.append(element);
     }
   }
 
@@ -177,7 +186,8 @@ window.addEventListener('DOMContentLoaded', () => {
         'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
         'Цена:', 
         229, 
-        'грн/день');
+        'грн/день',
+        ".menu .container");
 
   const premiumMenu = new MenuTemplates(
         'img/tabs/elite.jpg', 
@@ -186,7 +196,8 @@ window.addEventListener('DOMContentLoaded', () => {
         'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
         'Цена:', 
         550, 
-        'грн/день');
+        'грн/день',
+        ".menu .container");
 
   const menuLean = new MenuTemplates(
         'img/tabs/post.jpg', 
@@ -195,9 +206,56 @@ window.addEventListener('DOMContentLoaded', () => {
         'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
         'Цена:', 
         430, 
-        'грн/день');
+        'грн/день',
+        ".menu .container");
 
   fitnessMenu.addingInformationToTheSite();
   premiumMenu.addingInformationToTheSite();
   menuLean.addingInformationToTheSite();
+
+  // Forms 
+
+  const forms = document.querySelectorAll('form');
+
+  const message = {
+    loading: 'Загрузка',
+    success: 'Спасибо! Скоро мы с вами свяжемся',
+    failure: 'Что-то пошло не так...',
+  };
+
+  forms.forEach(item => {
+    postData(item);
+  });
+
+  function postData(form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const statusMassage = document.createElement('div');
+      statusMassage.classList.add('status');
+      statusMassage.textContent = message.loading;
+      form.append(statusMassage);
+      
+      const requst = new XMLHttpRequest();
+      requst.open('POST', 'server.php');
+
+      const formData = new FormData(form);
+
+      requst.send(formData);
+
+      requst.addEventListener('load', () => {
+        if (requst.status === 200) {
+          console.log(requst.response);
+          statusMassage.textContent = message.success;
+          form.reset();
+          setTimeout(() => {
+            statusMassage.remove();
+          }, 2000);
+        } else {
+          statusMassage.textContent = message.failure;
+        }
+      });
+    });
+  }
+
 });
