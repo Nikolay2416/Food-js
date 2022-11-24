@@ -42,4 +42,4 @@ function timer() {
   timerOnThePage();
 }
 
-module.exports = timer;
+export default timer;

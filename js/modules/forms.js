@@ -1,4 +1,6 @@
-function forms() {
+import {closeModal, launchingAModalWindow} from './modal';
+
+function forms(modalTimetId) {
   // Forms
 
   const forms = document.querySelectorAll('form');
@@ -67,7 +69,7 @@ function forms() {
     const prevModalDialog = document.querySelector('.modal__dialog');
 
     prevModalDialog.classList.add('hide');
-    launchingAModalWindow();
+    launchingAModalWindow('.modal', modalTimetId);
 
     const thanksModal = document.createElement('div');
     thanksModal.classList.add('modal__dialog');
@@ -82,9 +84,9 @@ function forms() {
       thanksModal.remove();
       prevModalDialog.classList.add('show');
       prevModalDialog.classList.remove('hide');
-      closeModal();
+      closeModal('.modal');
     }, 4000);
   }
 }
 
-module.exports = forms;
+export default forms;

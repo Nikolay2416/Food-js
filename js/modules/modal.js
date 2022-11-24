@@ -1,42 +1,50 @@
-function modal() {
-  // Modal
+function launchingAModalWindow(modalSelector, modalTimetId) {
+  const modalWindow = document.querySelector(modalSelector);
 
-  const openAModalWindow = document.querySelectorAll('[data-modal]'),
-  modalWindow = document.querySelector('.modal'),
-  closeTheModalWindow = document.querySelector('[data-close]');
-
-  function launchingAModalWindow() {
-    modalWindow.style.display = 'block';
-    document.body.style.overflow = 'hidden';
+  modalWindow.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  
+  console.log(modalTimetId);
+  if (modalTimetId) {
     clearInterval(modalTimetId);
   }
+}
 
-  function closeModal(){
-    modalWindow.style.display = 'none';
-    document.body.style.overflow = '';
-  }
+function closeModal(modalSelector){
+  const modalWindow = document.querySelector(modalSelector);
+
+  modalWindow.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+
+
+function modal(triggerSelector, modalSelector, closeModalSelector, modalTimetId) {
+  // Modal
+
+  const openAModalWindow = document.querySelectorAll(triggerSelector),
+        modalWindow = document.querySelector(modalSelector),
+        closeTheModalWindow = document.querySelector(closeModalSelector);
 
   openAModalWindow.forEach(item => {
     item.addEventListener('click', () => {
-      launchingAModalWindow();
+      launchingAModalWindow(modalSelector, modalTimetId);
     });
   });
 
-  closeTheModalWindow.addEventListener('click', closeModal);
+  closeTheModalWindow.addEventListener('click', () => closeModal(modalSelector));
 
   modalWindow.addEventListener('click', (e) => {
     if (e.target === modalWindow) {
-      closeModal();
+      closeModal(modalSelector);
     }
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.code === "Escape" && modalWindow.style.display === 'block') { 
-        closeModal();
+        closeModal(modalSelector);
     }
   });
-
-  const modalTimetId = setTimeout(launchingAModalWindow, 30000);
 
   const defaultOffset = 3300;
 
@@ -44,7 +52,7 @@ function modal() {
 
   function callingAModalWindowWhenScrolling() {
     if(scrollPosition() > defaultOffset) {
-      launchingAModalWindow();
+      launchingAModalWindow(modalSelector, modalTimetId);
       window.removeEventListener('scroll', callingAModalWindowWhenScrolling);
     }
   }
@@ -52,4 +60,6 @@ function modal() {
   window.addEventListener('scroll', callingAModalWindowWhenScrolling);
 }
 
-module.exports = modal;
+export default modal;
+export {launchingAModalWindow};
+export {closeModal};

@@ -117,4 +117,4 @@ function calc() {
   calcValues();
 }
 
-module.exports = calc;
+export default calc;
