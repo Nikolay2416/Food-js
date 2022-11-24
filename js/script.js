@@ -11,11 +11,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const modalTimetId = setTimeout(() => launchingAModalWindow('.modal', modalTimetId), 30000);
 
-  tabs();
+  tabs('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active');
   modal('[data-modal]', '.modal', '[data-close]', modalTimetId);
   timer();
   calc();
-  forms();
+  forms('form', modalTimetId);
   slider();
   cards();
   
